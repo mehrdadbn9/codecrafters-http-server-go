@@ -32,13 +32,14 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
+
+	// Read request line
 	requestLine, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Error reading request:", err)
+		fmt.Println("Error reading request line:", err)
 		return
 	}
 
-	// Example of requestLine: "GET /echo/abc HTTP/1.1\r\n"
 	parts := strings.Split(requestLine, " ")
 	if len(parts) < 2 {
 		fmt.Println("Malformed request line:", requestLine)
@@ -46,13 +47,45 @@ func handleConnection(conn net.Conn) {
 	}
 	path := parts[1]
 
+	// Read headers
+	headers := make(map[string]string)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading headers:", err)
+			return
+		}
+
+		line = strings.TrimRight(line, "\r\n")
+		if line == "" {
+			// End of headers
+			break
+		}
+
+		colonIndex := strings.Index(line, ":")
+		if colonIndex != -1 {
+			key := strings.TrimSpace(line[:colonIndex])
+			value := strings.TrimSpace(line[colonIndex+1:])
+			headers[strings.ToLower(key)] = value
+		}
+	}
+
+	// Prepare response
 	var response string
 	if path == "/" {
 		response = "HTTP/1.1 200 OK\r\n\r\n"
 	} else if strings.HasPrefix(path, "/echo/") {
-		// Extract string after "/echo/"
 		echoText := strings.TrimPrefix(path, "/echo/")
 		body := echoText
+		contentLength := len(body)
+		response = fmt.Sprintf(
+			"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
+			contentLength,
+			body,
+		)
+	} else if path == "/user-agent" {
+		userAgent := headers["user-agent"]
+		body := userAgent
 		contentLength := len(body)
 		response = fmt.Sprintf(
 			"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
