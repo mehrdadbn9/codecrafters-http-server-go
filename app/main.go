@@ -38,10 +38,10 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 
-	// requestLine: "GET /index.html HTTP/1.1\r\n"
+	// Example of requestLine: "GET /echo/abc HTTP/1.1\r\n"
 	parts := strings.Split(requestLine, " ")
 	if len(parts) < 2 {
-		fmt.Println("request line:", requestLine)
+		fmt.Println("Malformed request line:", requestLine)
 		return
 	}
 	path := parts[1]
@@ -49,6 +49,16 @@ func handleConnection(conn net.Conn) {
 	var response string
 	if path == "/" {
 		response = "HTTP/1.1 200 OK\r\n\r\n"
+	} else if strings.HasPrefix(path, "/echo/") {
+		// Extract string after "/echo/"
+		echoText := strings.TrimPrefix(path, "/echo/")
+		body := echoText
+		contentLength := len(body)
+		response = fmt.Sprintf(
+			"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
+			contentLength,
+			body,
+		)
 	} else {
 		response = "HTTP/1.1 404 Not Found\r\n\r\n"
 	}
