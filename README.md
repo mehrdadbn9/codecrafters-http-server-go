@@ -22,7 +22,7 @@ A lightweight, feature-rich HTTP server written in Go with support for file oper
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/go-web-server.git
+   git clone https://github.com/mehrdadbn9/codecrafters-http-server-go
    cd go-web-server
    ```
 
