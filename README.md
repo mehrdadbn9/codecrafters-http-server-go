@@ -1,37 +1,151 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/3d7a893c-a9aa-48e0-9ca8-9119859a77e9)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Go Web Server
 
-This is a starting point for Go solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+A lightweight, feature-rich HTTP server written in Go with support for file operations, session management, API endpoints, and security features.
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+## Features
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+- **Basic HTTP functionality** - Serves static content with proper headers
+- **File operations** - Upload, download, and delete files through API endpoints
+- **Session management** - Track user sessions with cookies
+- **API endpoints** - JSON-based API for status, time, and echo functionality
+- **Security features** - Protection against path traversal attacks, secure headers
+- **Compression** - Gzip support for bandwidth optimization
+- **Directory listing** - Browse files in the server's storage directory
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+## Getting Started
 
-# Passing the first stage
+### Prerequisites
 
-The entry point for your HTTP server implementation is in `app/main.go`. Study
-and uncomment the relevant code, and push your changes to pass the first stage:
+- Go 1.16 or higher
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/go-web-server.git
+   cd go-web-server
+   ```
+
+2. Build the server:
+   ```
+   go build -o server main.go
+   ```
+
+### Usage
+
+Run the server with optional configuration flags:
+
+```
+./server [--port PORT] [--directory DIRECTORY]
 ```
 
-Time to move on to the next stage!
+Parameters:
+- `--port` - TCP port to listen on (default: 8080)
+- `--directory` - Base directory for file storage (default: current directory)
 
-# Stage 2 & beyond
+Example:
+```
+./server --port 9000 --directory /var/www
+```
 
-Note: This section is for stages 2 and beyond.
+## API Documentation
 
-1. Ensure you have `go (1.24)` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.go`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+### Basic Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Returns a welcome message |
+| `/echo/{string}` | GET | Echoes the provided string |
+| `/user-agent` | GET | Returns the client's user agent |
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/status` | GET | Returns server status in JSON format |
+| `/api/time` | GET | Returns current server time in JSON format |
+| `/api/echo` | POST/PUT | Echoes the request body |
+| `/api/session` | GET | Returns current session information |
+
+### File Operations
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/files/` | GET | Lists all files in the files directory |
+| `/files/{filename}` | GET | Downloads the specified file |
+| `/files/{filename}` | POST | Creates or updates a file |
+| `/files/{filename}` | DELETE | Deletes the specified file |
+
+## Testing
+
+A comprehensive test script is included to verify all server functionality.
+
+### Running Tests
+
+1. Make the test script executable:
+   ```
+   chmod +x webserver-test.sh
+   ```
+
+2. Run the tests:
+   ```
+   ./webserver-test.sh [host] [port]
+   ```
+
+   Default host is "localhost"
+   Default port is 8080
+
+### What the Tests Cover
+
+The script tests 25 different aspects of the web server:
+
+#### Basic Functionality
+- Root endpoint (/)
+- Echo endpoint (/echo/hello-world)
+- User-agent endpoint (/user-agent)
+
+#### API Endpoints
+- Status (/api/status)
+- Time (/api/time)
+- Echo (/api/echo)
+- Session (/api/session)
+
+#### File Operations
+- Create a file (POST to /files/test.txt)
+- Get a file (GET from /files/test.txt)
+- Delete a file (DELETE /files/test.txt)
+- Get non-existent file (GET /files/nonexistent.txt)
+
+#### Session Management
+- Session cookie handling (using cookie jar)
+- Session persistence
+
+#### Security Tests
+- Path traversal attempt prevention
+- Security headers validation
+
+#### Content Features
+- Gzip compression support
+- Directory listing
+- JSON content type verification
+
+#### Edge Cases
+- Large request body handling
+- Multiple concurrent requests
+- Very long URLs
+- Long headers
+
+## Security Features
+
+- Protection against path traversal attacks
+- Secure headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
+- Session expiration and cleanup
+- Input validation
+
+## Performance
+
+The server is designed for concurrent operation and can handle multiple simultaneous connections efficiently.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
